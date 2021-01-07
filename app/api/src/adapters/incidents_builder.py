@@ -1,53 +1,55 @@
-import src.models as models
-import src.db as db
-import src.adapters as adapters
+import api.src.models as models
+import api.src.db as db
+import api.src.adapters as adapters
 import psycopg2
 
 class Builder:
-    def run(self, venue_details, conn, cursor):
-        venue = VenueBuilder().run(venue_details, conn, cursor)
-        if venue.exists:
-            return {'venue': venue, 'location': venue.location(cursor), 
-                    'venue_categories': venue.venue_categories(cursor)}
+    def run(self, incident_details, conn, cursor):
+        incident = IncidentBuilder().run(incident_details, conn, cursor)
+        if incident.exists:
+            return {'incident': incident, 'location': incident.location(cursor), 
+                    'complaint_type': incident.complaint_type(cursor)}
         else:
-            location = LocationBuilder().run(venue_details, venue, conn, cursor)
-            venue_categories = CategoryBuilder().run(venue_details, venue, conn, cursor)
-            return {'venue': venue, 'location': location, 'venue_categories': venue_categories}
+            location = LocationBuilder().run(incident_details, incident, conn, cursor)
+            venue_categories = CategoryBuilder().run(incident_details, incident, conn, cursor)
+            return {'incident': incident, 'location': location, 'complaint_type': incident.complaint_type} #**** check on this
 
-class VenueBuilder:
-    attributes = ['foursquare_id', 'name', 'price',
-            'rating', 'likes', 'menu_url']
+class IncidentBuilder:
+    attributes = ['cmplnt_num', 'cmplnt_fr_dt','cmplnt_fr_tm']
 
-    def select_attributes(self, venue_details):
-        menu_url = venue_details.get('delivery', '')
-        if menu_url:
-            menu_url = menu_url.get('url', '').split('?')[0]
-        foursquare_id, name, price, rating = venue_details['id'], venue_details['name'], venue_details.get('price', {}).get('tier', None), venue_details.get('rating', None)
-        likes = venue_details.get('likes', {}).get('count', None)
-        return dict(zip(self.attributes, [foursquare_id, name, price, rating, likes, menu_url]))
+    def select_attributes(self, incident_details):
+        incident_date = incident_details.get('incident_date', '')
+        if incident_date:
+            incident_num,incident_date,incident_time = incident_details['cmplnt_num'], incident_details['cmplnt_fr_dt'], incident_details['cmplnt_fr_tm']
+            likes = venue_details.get('likes', {}).get('count', None)
+        return dict(zip(self.attributes, [incident_num,incident_date,incident_time]))
 
-    def run(self, venue_details, conn, cursor):
-        selected = self.select_attributes(venue_details)
-        foursquare_id = selected['foursquare_id']
-        venue = models.Venue.find_by_foursquare_id(foursquare_id, cursor)
-        if venue:
-            venue.exists = True
-            return venue
+    def run(self, incident_details, conn, cursor):
+        selected = self.select_attributes(incident_details)
+        incident_num, = selected['cmplnt_num']
+        incident = models.Incident.find_by_incident_num(incident_num, cursor)
+        if incident:
+            incident.exists = True
+            return incident
         else:
-            venue = db.save(models.Venue(**selected), conn, cursor)
-            venue.exists = False
-            return venue
+            incident = db.save(models.Incident(**selected), conn, cursor)
+            incident.exists = False
+            return incident
 
 class LocationBuilder:
-    attributes = ['lng', 'lat', 'address', 'postalCode',
-            'city', 'state']
-    def select_attributes(self, venue_details):
-        location = venue_details['location']
+    attributes = ['id','latitude','longitude','boro_nm','addr_pct_cd','prem_typ_desc']
+    
+    def select_attributes(self, incident_details):
+        lat = incident_details['latitude']
+        lon = incident_details['longitude']
+        boro = incident_details['borough']
+        prec = incident_details['precinct']
+        setting = incident_details['setting']
         reduced_dict = {k:v for k,v in location.items() if k in self.attributes}
         return reduced_dict
 
     def run(self, venue_details, venue, conn, cursor):
-        location_attributes = self.select_attributes(venue_details)
+        location_attributes = self.select_attributes(incident_details)
         location = self.build_location_city_state_zip(location_attributes, conn, cursor)
         location.venue_id = venue.id
         location = db.save(location, conn, cursor)

@@ -34,4 +34,3 @@ CREATE TABLE IF NOT EXISTS incidents (
   REFERENCES complaints(id)
   ON DELETE CASCADE
 );
-
