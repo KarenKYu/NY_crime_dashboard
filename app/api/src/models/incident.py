@@ -19,7 +19,7 @@ class Incident():
     @classmethod
     def complaint_type(self,  cursor):
         complaint_query = """SELECT * FROM incidents WHERE complaint_id = %s"""
-        cursor.execute(complaint_query, (self.complaint_id,))
+        cursor.execute(complaint_query, (complaint_id,))
         record = cursor.fetchone()
         return db.build_from_record(Complaint, record)
 

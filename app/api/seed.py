@@ -1,5 +1,5 @@
 import psycopg2
-from api.src.db import *#conn, cursor, drop_records, save
+from api.src.db import *
 from api.src.models import Complaint, Incident, Location
 
 

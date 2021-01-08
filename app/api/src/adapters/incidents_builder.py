@@ -11,22 +11,21 @@ class Builder:
                     'complaint_type': incident.complaint_type(cursor)}
         else:
             location = LocationBuilder().run(incident_details, incident, conn, cursor)
-            venue_categories = CategoryBuilder().run(incident_details, incident, conn, cursor)
-            return {'incident': incident, 'location': location, 'complaint_type': incident.complaint_type} #**** check on this
+            complaint_type = ComplaintBuilder().run(incident_details, incident, conn, cursor)
+            return {'incident': incident, 'location': location, 'complaint_type': incident.complaint_type}
 
 class IncidentBuilder:
-    attributes = ['cmplnt_num', 'cmplnt_fr_dt','cmplnt_fr_tm']
+    attributes = ['incident_num', 'complaint_id', 'incident_date','incident_time', 'location_id']
 
     def select_attributes(self, incident_details):
-        incident_date = incident_details.get('incident_date', '')
-        if incident_date:
-            incident_num,incident_date,incident_time = incident_details['cmplnt_num'], incident_details['cmplnt_fr_dt'], incident_details['cmplnt_fr_tm']
-            likes = venue_details.get('likes', {}).get('count', None)
+        complaint_id =
+        location_id=
+        incident_num,incident_date,incident_time = incident_details['cmplnt_num'], incident_details['cmplnt_fr_dt'], incident_details['cmplnt_fr_tm']
         return dict(zip(self.attributes, [incident_num,incident_date,incident_time]))
 
     def run(self, incident_details, conn, cursor):
         selected = self.select_attributes(incident_details)
-        incident_num, = selected['cmplnt_num']
+        incident_num = selected['cmplnt_num']
         incident = models.Incident.find_by_incident_num(incident_num, cursor)
         if incident:
             incident.exists = True
@@ -36,22 +35,20 @@ class IncidentBuilder:
             incident.exists = False
             return incident
 
-class LocationBuilder:
-    attributes = ['id','latitude','longitude','boro_nm','addr_pct_cd','prem_typ_desc']
-    
-    def select_attributes(self, incident_details):
-        lat = incident_details['latitude']
-        lon = incident_details['longitude']
-        boro = incident_details['borough']
-        prec = incident_details['precinct']
-        setting = incident_details['setting']
-        reduced_dict = {k:v for k,v in location.items() if k in self.attributes}
-        return reduced_dict
+class LocationBuilder:]
+    attributes = ['latitude','longitude','borough','precinct','setting']
 
-    def run(self, venue_details, venue, conn, cursor):
+    def select_attributes(self, incident_details):
+        latitude = incident_details['latitude']
+        longitude = incident_details['longitude']
+        borough = incident_details['boro_nm']
+        precinct = incident_details['addr_pct_cd']
+        setting = incident_details['prem_typ_desc']
+        return dict(zip(self.attributes,[latitude,longitude,borough,precinct,setting]))
+
+    def run(self, incident_details, incident, conn, cursor):
         location_attributes = self.select_attributes(incident_details)
         location = self.build_location_city_state_zip(location_attributes, conn, cursor)
-        location.venue_id = venue.id
         location = db.save(location, conn, cursor)
         return location
 
@@ -80,21 +77,23 @@ class LocationBuilder:
                 )
         return location
 
-class CategoryBuilder:
-    def select_attributes(self, venue_details):
-        categories = [category['name'] for category in venue_details['categories']]
-        return categories
+class ComplaintBuilder:
+    attributes= ['desc_offense', 'level_offense', 'dept_juris'] 
+   
+    def select_attributes(self, incident_details):
+        desc_offense, level_offense, dept_juris = incident_details['ofns_desc'],[incident_details['law_cat_cd'],[incident_details['juris_desc']
+        return dict(zip(self.attributes,[desc_offense, level_offense, dept_juris] ))
 
-    def find_or_create_categories(self, category_names, conn, cursor):
-        if not isinstance(category_names, list): raise TypeError('category_names must be list')
-        categories = []
-        for name in category_names:
-            category = db.find_or_create_by_name(models.Category, 
+    def find_or_create_complaints(self, complaint_name, conn, cursor):
+        if not isinstance(complaint_name, list): raise TypeError('complaint description must be list')
+        complaints = []
+        for name in complaint_name:
+            complaint = db.find_or_create_by_name(models.Complaint, 
                 name, conn, cursor)
-            categories.append(category)
-        return categories
+            complaints.append(complaint_name)
+        return complaints
 
-    def create_venue_categories(self, venue, categories, conn, cursor):
+    def create_incident_complaints(self, incident, complaints, conn, cursor):
         categories = [models.VenueCategory(venue_id = venue.id, category_id = category.id)
                 for category in categories]
         return [db.save(category, conn, cursor) for category in categories]

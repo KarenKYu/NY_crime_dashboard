@@ -11,8 +11,8 @@ class Complaint():
 
 # select all columns from incidents table where complaint_id== a type of complaint aka incidents by type of complaint
     def incidents(self, cursor):
-        query_str = "SELECT * FROM incidents WHERE incident_id = %s"
-        cursor.execute(query_str, (self.incident_id,))
+        query_str = "SELECT * FROM incidents WHERE complaint_id = %s"
+        cursor.execute(query_str, (self.id,))
         records = cursor.fetchall()
         return db.build_from_records(models.Complaint, records)
 
