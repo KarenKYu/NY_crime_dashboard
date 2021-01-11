@@ -16,8 +16,8 @@ class Client:
     def request_incidents(self, query_params = {'$limit':500000,'BORO_NM': 'MANHATTAN', 'OFNS_DESC': 'PETIT LARCENY'}):
         return requests.get(f'{self.ROOT_URL}', self.full_params(query_params)).json()
 
-    # def request_incident(self, query_params = {'$limit':1}):
-    #     return requests.get(f'{self.ROOT_URL}', self.full_params(query_params)).json()
+    def request_incident(self, query_params = {'cmplnt_num':604509546}):
+        return requests.get(f'{self.ROOT_URL}', self.full_params(query_params)).json()
 
 
         #cmplnt_num':'797931560'

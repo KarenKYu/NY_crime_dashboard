@@ -13,7 +13,7 @@ class RequestAndBuild:
         self.cursor = self.conn.cursor()
 
 
-    def run(self, query_params = {'$limit':500000}):
+    def run(self, query_params = {'$limit':5}):
         incidents = self.client.request_incidents(query_params)
         incident_ids = [incident['cmplnt_num'] for incident in incidents]
         incident_objs = []
