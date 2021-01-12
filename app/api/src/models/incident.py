@@ -18,25 +18,29 @@ class Incident():
         record =  cursor.fetchone()
         return db.build_from_record(Incident, record)
 
-    @classmethod
     def complaint_type(self,  cursor):
-        complaint_query = """SELECT * FROM incidents WHERE complaint_id = %s"""
-        cursor.execute(complaint_query, (complaint_id,))
+        complaint_query = """SELECT * FROM complaints WHERE id = %s"""
+        cursor.execute(complaint_query, (self.complaint_id,))
         record = cursor.fetchone()
         return db.build_from_record(models.Complaint, record)
 
-    @classmethod
     def location(self, cursor):
-        location_query = """SELECT locations.* FROM locations WHERE self.location_id = %s"""
+        location_query = """SELECT * FROM locations WHERE id = %s"""
         cursor.execute(location_query, (self.location_id,))
-        record = cursor.fetchall()
-        return db.build_from_records(models.Location, record)
+        record = cursor.fetchone()
+        return db.build_from_record(models.Location, record)
 
     def loc_to_json(self, cursor):
         location_json = self.__dict__
-        location = self.location_id(cursor)
+        location = self.location(cursor)
         if location:
-            location_dict = {'longitude': location.longitude, 'latitude': location.latitude, 'borough': location.borough, 'precinct':location.precinct, 'setting': location.setting}
-            location_json['location'] = location_dict
+            location_json['location'] = location.__dict__
         return location_json
+
+    def complaint_to_json(self, cursor):
+        complaint_json = self.__dict__
+        complaint = self.complaint_type(cursor)
+        if complaint:
+            complaint_json['complaint'] = complaint.__dict__
+        return complaint_json
 

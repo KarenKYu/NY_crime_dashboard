@@ -1,5 +1,12 @@
+import api.src.models as models
+import api.src.adapters as adapters
+from api.src.db.db import dev_conn
 
 
+conn= dev_conn
+cursor = conn.cursor()
+
+incident = models.Incident.find_by_incident_num('604509546',cursor)
 # >>> incid.request_incidents(query_params = {'$limit':2,'BORO_NM': 'MANHATTAN', 'OFNS_DESC': 'PETIT LARCENY'})
 incident_jsons = [{'cmplnt_num': '604509546', 'addr_pct_cd': '14', 'boro_nm': 'MANHATTAN', 'cmplnt_fr_dt': '2020-09-26T00:00:00.000', 
 'cmplnt_fr_tm': '19:30:00', 'crm_atpt_cptd_cd': 'COMPLETED', 'juris_desc': 'N.Y. POLICE DEPT', 'ky_cd': '341', 

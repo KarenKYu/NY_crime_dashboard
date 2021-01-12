@@ -9,10 +9,8 @@ class Builder:
         incident = IncidentBuilder().run(incident_details, conn, cursor)
         print(incident.__dict__)
         if incident.exists:
-            return {'incident': incident}#, 'location': incident.location(cursor), 
+            # {'incident': incident}#, 'location': incident.location(cursor), 
                     #'complaint_type': incident.complaint_type(cursor)}
-
-        else:
             location = LocationBuilder().run(incident_details, conn, cursor)
             complaint = ComplaintBuilder().run(incident_details, conn, cursor)
             incident.location_id = location.id
@@ -44,11 +42,11 @@ class LocationBuilder:
     attributes = ['latitude','longitude','borough','precinct','setting']
 
     def select_attributes(self, incident_details):
-        latitude = incident_details['latitude']
-        longitude = incident_details['longitude']
-        borough = incident_details['boro_nm']
-        precinct = incident_details['addr_pct_cd']
-        setting = incident_details['prem_typ_desc']
+        latitude = incident_details[0]['latitude']
+        longitude = incident_details[0]['longitude']
+        borough = incident_details[0]['boro_nm']
+        precinct = incident_details[0]['addr_pct_cd']
+        setting = incident_details[0]['prem_typ_desc']
         return dict(zip(self.attributes,[latitude,longitude,borough,precinct,setting]))
 
     def run(self, incident_details, conn, cursor):
@@ -86,7 +84,7 @@ class ComplaintBuilder:
     attributes= ['desc_offense', 'level_offense', 'dept_juris'] 
    
     def select_attributes(self, incident_details):
-        desc_offense, level_offense, dept_juris = incident_details['ofns_desc'],incident_details['law_cat_cd'],incident_details['juris_desc']
+        desc_offense, level_offense, dept_juris = incident_details[0]['ofns_desc'],incident_details[0]['law_cat_cd'],incident_details[0]['juris_desc']
         return dict(zip(self.attributes,[desc_offense, level_offense, dept_juris]))
 
     def run(self, incident_details, conn, cursor):

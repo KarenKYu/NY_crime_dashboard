@@ -1,7 +1,8 @@
 from flask import current_app
 from flask import g
 import psycopg2
-
+dev_conn = psycopg2.connect(user = 'postgres', password = 'postgres',
+            dbname = 'nypd_complaints')
 
 def get_db():
     if "db" not in g:

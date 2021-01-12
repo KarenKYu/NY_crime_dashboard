@@ -1,6 +1,6 @@
 class Location:
     __table__='locations'
-    columns = ['id','latitude','longitude','borough','precinct','setting']
+    columns = ['id','borough','latitude','longitude','setting','precinct']
 
     def __init__(self, **kwargs):
         for key in kwargs.keys():
@@ -23,3 +23,5 @@ class Location:
         cursor.execute(query_str, (self.borough,))
         records = cursor.fetchall()
         return db.build_from_records(models.Location, records)
+
+        (5, 'MANHATTAN', Decimal('40.75469651000003'), Decimal('-73.99535613299997'), 'STREET', 14)
