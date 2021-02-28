@@ -7,7 +7,7 @@ dev_conn = psycopg2.connect(user = 'postgres', password = 'postgres',
 def get_db():
     if "db" not in g:
         g.db = psycopg2.connect(user = 'postgres', password = 'postgres',
-            dbname = current_app.config['nypd_complaints'])
+            dbname = current_app.config['DATABASE'])
     return g.db
 
 

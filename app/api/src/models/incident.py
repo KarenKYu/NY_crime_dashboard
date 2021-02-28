@@ -18,17 +18,27 @@ class Incident():
         record =  cursor.fetchone()
         return db.build_from_record(Incident, record)
 
-    def complaint_type(self,  cursor):
-        complaint_query = """SELECT * FROM complaints WHERE id = %s"""
-        cursor.execute(complaint_query, (self.complaint_id,))
-        record = cursor.fetchone()
-        return db.build_from_record(models.Complaint, record)
+    @classmethod
+    def find_incidents_by_date(self, date, cursor):
+        date_query = """SELECT * FROM incidents WHERE incident_date = %s"""
+        cursor.execute(date_query, (date,))
+        record = cursor.fetchall()
+        return db.build_from_records(Incident, record)
 
-    def location(self, cursor):
-        location_query = """SELECT * FROM locations WHERE id = %s"""
-        cursor.execute(location_query, (self.location_id,))
-        record = cursor.fetchone()
-        return db.build_from_record(models.Location, record)
+    @classmethod
+    def find_incidents_by_complaint_type(self, complaint_type, cursor):
+        incident_query = """SELECT * FROM incidents JOIN complaints ON incidents.complaint_id = complaints.id 
+        WHERE desc_offense = %s"""
+        cursor.execute(incident_query, (complaint_type,))
+        record =  cursor.fetchall()
+        return db.build_from_records(Incident, record) # returns a list of incident objects which match the complaint type
+
+    @classmethod
+    def find_incidents_by_borough(self, borough, cursor):
+        query_str = """SELECT * FROM incidents JOIN locations ON incidents.location_id = locations.id WHERE borough = %s"""
+        cursor.execute(query_str, (borough,))
+        records = cursor.fetchall()
+        return db.build_from_records(Incident, records)
 
     def loc_to_json(self, cursor):
         location_json = self.__dict__

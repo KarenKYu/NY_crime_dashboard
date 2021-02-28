@@ -1,3 +1,5 @@
+from api.src.db import db
+import api.src.models as models
 class Location:
     __table__='locations'
     columns = ['id','borough','latitude','longitude','setting','precinct']
@@ -9,19 +11,19 @@ class Location:
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-# select all columns from incidents table where location_id== a location aka incidents associated with location
     @classmethod
-    def incidents(self, cursor):
-        query_str = "SELECT * FROM incidents WHERE location_id = %s"
-        cursor.execute(query_str, (self.id,))
-        records = cursor.fetchall()
-        return db.build_from_records(models.Location, records)
+    def find_by_location_id(self, id, cursor): 
+        location_query = """SELECT * FROM locations WHERE id = %s"""
+        cursor.execute(location_query, (id,))
+        record =  cursor.fetchone()
+        return db.build_from_record(Location, record)
+
+       # (5, 'MANHATTAN', Decimal('40.75469651000003'), Decimal('-73.99535613299997'), 'STREET', 14)
 
     @classmethod
-    def boroughs(self, cursor):
-        query_str = "SELECT * FROM incidents WHERE location_id = %s"
-        cursor.execute(query_str, (self.borough,))
+    def lat_long(self, latitude, longitude, cursor):
+        query_str = "SELECT * FROM locations WHERE (latitude,longitude) = %s"
+        cursor.execute(query_str, (latitude,longitude))
         records = cursor.fetchall()
-        return db.build_from_records(models.Location, records)
-
-        (5, 'MANHATTAN', Decimal('40.75469651000003'), Decimal('-73.99535613299997'), 'STREET', 14)
+        return db.build_from_records(Location, records)
+       
