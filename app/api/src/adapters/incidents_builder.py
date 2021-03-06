@@ -5,7 +5,7 @@ import psycopg2
 
 #incident_details == list of dictionaries
 class Builder:
-    def run(self, incident_details, conn, cursor):
+    def run(self, incident_details, conn, cursor): #takes in json details for one incident
         incident = IncidentBuilder().run(incident_details, conn, cursor)
         print(incident.__dict__)
         if incident.exists:
@@ -20,14 +20,14 @@ class Builder:
 
 class IncidentBuilder:
     attributes = ['incident_num', 'incident_date','incident_time']
-
-    def select_attributes(self, incident_details):
+#gets info you want to hold onto from json file for incident class
+    def select_attributes(self, incident_details): 
         for incident in incident_details:
             incident_num = incident['cmplnt_num']
             incident_date = incident['cmplnt_fr_dt']
             incident_time = incident['cmplnt_fr_tm'] 
             return dict(zip(self.attributes, [incident_num, incident_date, incident_time]))
-
+#takes info and assigns to Incident obj instance as attributes
     def run(self, incident_details, conn, cursor):
         selected = self.select_attributes(incident_details)
         incident = models.Incident(**selected)
@@ -36,18 +36,19 @@ class IncidentBuilder:
             return incident         
         else:
             incident.exists = False
+            incident = db.save(incident, conn, cursor)
             return incident
 
 class LocationBuilder:
-    attributes = ['latitude','longitude','borough','precinct','setting']
+    attributes = ['borough','latitude','longitude','setting','precinct']
 
     def select_attributes(self, incident_details):
+        borough = incident_details[0]['boro_nm']
         latitude = incident_details[0]['latitude']
         longitude = incident_details[0]['longitude']
-        borough = incident_details[0]['boro_nm']
-        precinct = incident_details[0]['addr_pct_cd']
         setting = incident_details[0]['prem_typ_desc']
-        return dict(zip(self.attributes,[latitude,longitude,borough,precinct,setting]))
+        precinct = incident_details[0]['addr_pct_cd']
+        return dict(zip(self.attributes,[borough,latitude,longitude,setting,precinct]))
 
     def run(self, incident_details, conn, cursor):
         location_attributes = self.select_attributes(incident_details)

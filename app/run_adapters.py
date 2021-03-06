@@ -13,13 +13,13 @@ class RequestAndBuild:
         self.cursor = self.conn.cursor()
 
 
-    def run(self, query_params = {'$limit':5}):
+    def run(self, query_params = {'$limit':10}):
         incidents = self.client.request_incidents(query_params) #hit api and retrieves json files
-        incident_ids = [incident['cmplnt_num'] for incident in incidents]
+        incident_ids = [incident['cmplnt_num'] for incident in incidents] #gets all incident #s
         incident_objs = []
-        for incident_id in incident_ids:
+        for incident_id in incident_ids: #hit api and retrieve individual incidents by incident #
             incident_details = self.client.request_incident(query_params = {'cmplnt_num':incident_id})
-            incident_obj = self.builder.run(incident_details, self.conn, self.cursor)
+            incident_obj = self.builder.run(incident_details, self.conn, self.cursor) #takes json file for one incident and builds objs for incident, location and complaint
             incident_objs.append(incident_obj)
         return incident_objs
 

@@ -12,18 +12,19 @@ class Location:
             setattr(self, k, v)
 
     @classmethod
-    def find_by_location_id(self, id, cursor): 
+    def find_by_id(self, id, cursor): 
         location_query = """SELECT * FROM locations WHERE id = %s"""
         cursor.execute(location_query, (id,))
         record =  cursor.fetchone()
         return db.build_from_record(Location, record)
-
-       # (5, 'MANHATTAN', Decimal('40.75469651000003'), Decimal('-73.99535613299997'), 'STREET', 14)
+# >>> location = Location.find_by_id('5',cursor)
+# >>> location.__dict__
+# {'id': 5, 'borough': 'MANHATTAN', 'latitude': Decimal('40.75469651000003'), 'longitude': Decimal('-73.99535613299997'), 'setting': 'STREET', 'precinct': 14}
 
     @classmethod
     def lat_long(self, latitude, longitude, cursor):
-        query_str = "SELECT * FROM locations WHERE (latitude,longitude) = %s"
-        cursor.execute(query_str, (latitude,longitude))
+        query_str = f"SELECT * FROM locations WHERE (latitude, longitude) = ({latitude},{longitude})"
+        cursor.execute(query_str)
         records = cursor.fetchall()
         return db.build_from_records(Location, records)
        
