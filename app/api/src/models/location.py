@@ -22,9 +22,13 @@ class Location:
 # {'id': 5, 'borough': 'MANHATTAN', 'latitude': Decimal('40.75469651000003'), 'longitude': Decimal('-73.99535613299997'), 'setting': 'STREET', 'precinct': 14}
 
     @classmethod
-    def lat_long(self, latitude, longitude, cursor):
-        query_str = f"SELECT * FROM locations WHERE (latitude, longitude) = ({latitude},{longitude})"
-        cursor.execute(query_str)
+    def find_by_lat_long(self, latitude, longitude, cursor):
+        query_str = "SELECT * FROM locations WHERE (latitude, longitude) = (%s,%s)"
+        cursor.execute(query_str, (latitude,longitude))
         records = cursor.fetchall()
         return db.build_from_records(Location, records)
-       
+# >>> location = Location.find_by_lat_long('40.82413968200007','-73.94097291399999',cursor)
+# >>> len(location)
+# 1
+# >>> location[0].__dict__
+# {'id': 2, 'borough': 'MANHATTAN', 'latitude': Decimal('40.82413968200007'), 'longitude': Decimal('-73.94097291399999'), 'setting': 'STREET', 'precinct': 32}     
