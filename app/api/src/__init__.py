@@ -22,9 +22,8 @@ def create_app(database='nypd_complaints', testing = False, debug = True):
     def incidents():
         conn = db.get_db()
         cursor = conn.cursor()
-
         incidents = db.find_all(models.Incident, cursor)
-        incident_dicts = [incident.__dict__ for incident in incidents]
+        incident_dicts = [incident.to_json(cursor) for incident in incidents]
         return json.dumps(incident_dicts, default = str)
 
     @app.route('/incidents/search')
@@ -32,18 +31,20 @@ def create_app(database='nypd_complaints', testing = False, debug = True):
         conn = db.get_db()
         cursor = conn.cursor()
 
-        params = dict(request.args)
-        incidents = models.Incident.search(params, cursor)
+        params = dict(request.args) # from frontend/index.py streamlit requests.get(API_URL + "price":price)
+        incidents = models.Incident.find_by_complaint_type(params, cursor)
         incident_dicts = [incident.to_json(cursor) for incident in incidents]
         return json.dumps(incident_dicts, default = str)
 
-    @app.route('/incidents/<id>')
-    def incident(id):
+    @app.route('/incidents/<incident_num>')
+    def incident(incident_num):
         conn = db.get_db()
         cursor = conn.cursor()
-        venue = db.find(models.Incident, id, cursor)
+        incident = db.find_incident(models.Incident, incident_num, cursor)
 
         return json.dumps(incident.__dict__, default = str)
 
 
     return app
+
+    

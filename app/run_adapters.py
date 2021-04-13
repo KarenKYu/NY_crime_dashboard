@@ -6,14 +6,14 @@ import psycopg2
 class RequestAndBuild:
     def __init__(self):
         self.client = adapters.Client() #create an instance of the Client class - from client.py file
-        self.builder = adapters.Builder() # create an instance of the Builder class -from 
+        self.builder = adapters.Builder() # create an instance of the Builder class -from incidents_builder.py file
         self.conn = psycopg2.connect(database = 'nypd_complaints', 
                 user = 'postgres', 
                 password = 'postgres')
         self.cursor = self.conn.cursor()
 
 
-    def run(self, query_params = {'$limit':10}):
+    def run(self, query_params = {'$limit':50000}):
         incidents = self.client.request_incidents(query_params) #hit api and retrieves json files
         incident_ids = [incident['cmplnt_num'] for incident in incidents] #gets all incident #s
         incident_objs = []

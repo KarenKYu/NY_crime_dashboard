@@ -35,10 +35,10 @@ class Incident():
 # {'id': 2, 'incident_num': 664557183, 'complaint_id': 2, 'incident_date': datetime.date(2020, 6, 24), 'incident_time': datetime.time(21, 20), 'location_id': 2}
 
     @classmethod
-    def find_by_complaint_type(self, complaint_type, cursor):
+    def find_incident_by_complaint(self, complaint, cursor):
         incident_query = """SELECT * FROM incidents JOIN complaints ON incidents.complaint_id = complaints.id 
         WHERE desc_offense = %s"""
-        cursor.execute(incident_query, (complaint_type,))
+        cursor.execute(incident_query, (complaint,))
         record =  cursor.fetchall()
         return db.build_from_records(Incident, record) # returns a list of incident objects which match the complaint type
 # >>> incident2 = Incident.find_incidents_by_complaint_type('ROBBERY',cursor)
@@ -56,32 +56,31 @@ class Incident():
 # >>> incident3[0].__dict__
 # {'id': 3, 'incident_num': 453437883, 'complaint_id': 3, 'incident_date': datetime.date(2020, 9, 28), 'incident_time': datetime.time(20, 0), 'location_id': 3}
     
-    @classmethod
-    def find_location(self, incident_num, cursor):
+    def location(self, cursor):
         location_query = """SELECT * FROM locations JOIN incidents ON incidents.location_id = locations.id WHERE incident_num = %s"""
-        cursor.execute(location_query, (incident_num,))
+        cursor.execute(location_query, (self.incident_num,))
         record =  cursor.fetchone()
         return db.build_from_record(models.Location, record)
 # >>> incid = Incident.return_location('453437883',cursor)
 # >>> incid.__dict__
 # {'id': 3, 'borough': 'BRONX', 'latitude': Decimal('40.88144124600007'), 'longitude': Decimal('-73.83235353999999'), 'setting': 'OTHER', 'precinct': 47}
 
-    def loc_to_json(self, incident_num, cursor):
-        location_json = self.__dict__
-        location = self.return_location(incident_num,cursor)
+    def to_json(self,cursor):
+        incident_attr = self.__dict__
+        location = self.location(cursor)
         if location:
-            location_json['location'] = location.__dict__
-        return location_json
+            incident_attr.update(location.__dict__)
+        return incident_attr
 # >>> incident = Incident().loc_to_json('453437883',cursor) 
 # >>> incident
 # {'location': {'id': 3, 'borough': 'BRONX', 'latitude': Decimal('40.88144124600007'), 'longitude': Decimal('-73.83235353999999'), 'setting': 'OTHER', 'precinct': 47}}
 
-    def complaint_to_json(self, complaint_type, cursor):
-        complaint_json = self.__dict__
-        complaints = self.find_by_complaint_type(complaint_type, cursor)
+    def complaint(self, cursor):
+        incident_attr = self.__dict__
+        complaints = self.find_incident_by_complaint(complaint_type, cursor)
         if len(complaints)>0:
-            complaint_json['complaint'] = [complaint.__dict__ for complaint in complaints]
-        return complaint_json
+            incident_attr['complaint'] = [complaint.__dict__ for complaint in complaints]
+        return incident_attr
 # >>> incid = Incident().complaint_to_json('ROBBERY',cursor)            
 # >>> incid 
 # {'complaint': [{'id': 3, 'incident_num': 453437883, 'complaint_id': 3, 'incident_date': datetime.date(2020, 9, 28), 'incident_time': datetime.time(20, 0), 'location_id': 3}]}

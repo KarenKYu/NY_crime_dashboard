@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS complaints (
 CREATE TABLE IF NOT EXISTS locations (
   id serial PRIMARY KEY,
   borough VARCHAR(255),
-  latitude DECIMAL,
-  longitude DECIMAL,
+  latitude DECIMAL(8,6),
+  longitude DECIMAL(9,6),
   setting VARCHAR(255),
   precinct INTEGER
 );

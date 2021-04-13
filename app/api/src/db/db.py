@@ -39,6 +39,12 @@ def find(Class, id, cursor):
     record = cursor.fetchone()
     return build_from_record(Class, record)
 
+def find_incident(Class, incident_num, cursor):
+    sql_str = f"SELECT * FROM {Class.__table__} WHERE incident_num = %s"
+    cursor.execute(sql_str, (incident_num,))
+    record = cursor.fetchone()
+    return build_from_record(Class, record)
+
 def save(obj, conn, cursor):
     s_str = ', '.join(len(values(obj)) * ['%s'])
     venue_str = f"""INSERT INTO {obj.__table__} ({keys(obj)}) VALUES ({s_str});"""

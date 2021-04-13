@@ -31,4 +31,11 @@ class Location:
 # >>> len(location)
 # 1
 # >>> location[0].__dict__
-# {'id': 2, 'borough': 'MANHATTAN', 'latitude': Decimal('40.82413968200007'), 'longitude': Decimal('-73.94097291399999'), 'setting': 'STREET', 'precinct': 32}     
+# {'id': 2, 'borough': 'MANHATTAN', 'latitude': Decimal('40.82413968200007'), 'longitude': Decimal('-73.94097291399999'), 'setting': 'STREET', 'precinct': 32} 
+    # @classmethod
+    # def find_lat_long_by_ borough(self, borough, cursor):
+    #     query_str = “SELECT latitude,longitude FROM locations WHERE borough = '%s';”
+    #     cursor.execute(query_str, (borough,))
+    #     records = cursor.fetchall()
+    #     pd.DataFrame(data = records, columns =, [‘lat’,’lon’])
+    
