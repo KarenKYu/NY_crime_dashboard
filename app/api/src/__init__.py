@@ -11,8 +11,7 @@ def create_app(database='nypd_complaints', testing = False, debug = True):
     app.config.from_mapping(
         DATABASE=database,
         DEBUG = debug,
-        TESTING = testing
-    )
+        TESTING = testing)
 
     @app.route('/')
     def root_url():
@@ -31,7 +30,7 @@ def create_app(database='nypd_complaints', testing = False, debug = True):
         conn = db.get_db()
         cursor = conn.cursor()
 
-        params = dict(request.args) # from frontend/index.py streamlit requests.get(API_URL + "price":price)
+        params = dict(request.args) # from frontend/index.py streamlit requests.get(API_URL + "complaint":complaint)
         incidents = models.Incident.find_by_complaint_type(params, cursor)
         incident_dicts = [incident.to_json(cursor) for incident in incidents]
         return json.dumps(incident_dicts, default = str)

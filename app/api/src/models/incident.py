@@ -1,7 +1,7 @@
 from api.src.db import db
 import api.src.models as models
 class Incident():
-    __table__='incidents'
+    __table__ ='incidents'
     columns = ['id','incident_num', 'complaint_id', 'incident_date','incident_time', 'location_id']
 
     def __init__(self, **kwargs):
