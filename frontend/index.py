@@ -41,9 +41,13 @@ option = st.selectbox(
 
 st.map(find_lat_long_by_borough(lat_lon_df, option))
 
-date = st.text_input("Find incidents by date. Enter date as YYYY-DD-MM")
+#date = st.text_input("Find incidents by date. Enter date as YYYY-DD-MM")
 
+sites_df= pd.read_csv('tourist_lat_long.csv').drop(columns="Unnamed: 3")
 
+letter = str(st.text_input("Enter first letter of site.")).lower()
 
+scoped_choice = sites_df[[site[0] == letter for site in sites_df.loc_name]].loc_name.values
 
+site = st.selectbox("Pick a site", (scoped_choice))
 
