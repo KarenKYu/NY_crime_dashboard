@@ -41,6 +41,8 @@ option = st.selectbox(
 
 st.map(find_lat_long_by_borough(lat_lon_df, option))
 
+date = st.text_input("Find incidents by date. Enter date as YYYY-DD-MM")
+
 
 
 
