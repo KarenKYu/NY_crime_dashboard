@@ -1,9 +1,9 @@
 import psycopg2
-from api.src.db import drop_records, save
-from api.src.models import Complaint, Incident, Location
+from app.api.src.db import drop_records, save
+from app.api.src.models import Complaint, Incident, Location
 
 
-conn = psycopg2.connect(database = 'nypd_complaints', user = 'postgres', password = 'postgres')
+conn = psycopg2.connect(database = 'test_nypd_complaints', user = 'postgres', password = 'postgres')
 cursor = conn.cursor()
 
 drop_records(cursor, conn, 'complaints')

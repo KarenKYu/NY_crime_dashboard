@@ -1,5 +1,5 @@
-from api.src.db import db
-import api.src.models as models
+from app.api.src.db import db
+import app.api.src.models as models
 class Incident():
     __table__ ='incidents'
     columns = ['id','incident_num', 'complaint_id', 'incident_date','incident_time', 'location_id']
@@ -77,7 +77,7 @@ class Incident():
 
     def complaint(self, cursor):
         incident_attr = self.__dict__
-        complaints = self.find_incident_by_complaint(complaint_type, cursor)
+        complaints = self.find_incident_by_complaint(self.complaint_id, cursor)
         if len(complaints)>0:
             incident_attr['complaint'] = [complaint.__dict__ for complaint in complaints]
         return incident_attr

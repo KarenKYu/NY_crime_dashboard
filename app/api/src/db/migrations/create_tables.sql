@@ -21,10 +21,10 @@ CREATE TABLE IF NOT EXISTS locations (
 CREATE TABLE IF NOT EXISTS incidents (
   id serial PRIMARY KEY,
   incident_num INTEGER UNIQUE,
-  complaint_id INTEGER NOT NULL,
+  complaint_id INTEGER,
   incident_date DATE,
   incident_time TIME,
-  location_id INTEGER NOT NULL,
+  location_id INTEGER,
   CONSTRAINT fk_location
   FOREIGN KEY (location_id) 
   REFERENCES locations(id)

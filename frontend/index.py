@@ -17,14 +17,7 @@ def get_lat_lon(API_URL):
     return df
 
 lat_lon_df = get_lat_lon(API_URL)
-#def find_lat_long_by_date(API_URL):
 
-# def find_lat_long_by_borough(API_URL, option):
-#     lat_lon_df = get_lat_lon(API_URL)
-#     boro_df = lat_lon_df[lat_lon_df['boro']== option]
-#     return boro_df
-
-# below is 3x faster than above function per timeit. adding st.cache reduces return time to 1 second instead of about 6 seconds
 @st.cache 
 def find_lat_long_by_borough(lat_lon_df, option):
     df = lat_lon_df[lat_lon_df['boro']== option]
@@ -34,6 +27,7 @@ def find_lat_long_by_borough(lat_lon_df, option):
 st.header("**NYC** Police Department incidents")
 
 st.map(get_lat_lon(API_URL))
+'''User selects a boroough and display incidents'''
 
 option = st.selectbox(
         'Select a borough:',
@@ -41,13 +35,20 @@ option = st.selectbox(
 
 st.map(find_lat_long_by_borough(lat_lon_df, option))
 
-#date = st.text_input("Find incidents by date. Enter date as YYYY-DD-MM")
-
 sites_df= pd.read_csv('tourist_lat_long.csv').drop(columns="Unnamed: 3")
 
-letter = str(st.text_input("Enter first letter of site.")).lower()
+letter,site,start,end = st.beta_columns(4)
 
-scoped_choice = sites_df[[site[0] == letter for site in sites_df.loc_name]].loc_name.values
+first_letter = str(letter.text_input("Enter first letter of site.")).lower()
 
-site = st.selectbox("Pick a site", (scoped_choice))
+site_names = sites_df[[site[0] == first_letter for site in sites_df.loc_name]].loc_name.values
+#returns numpy.ndarray
 
+site_choice = site.selectbox("Pick a site", (site_names))
+# site_choice = 'brooklyn_bridge'
+#returns numpy.str_
+
+start_date = start.date_input("Select a start date")
+end_date = end.date_input("Select an end date")
+
+st.map(sites_df[sites_df.loc_name==site_choice])

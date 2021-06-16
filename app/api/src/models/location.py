@@ -1,5 +1,5 @@
-from api.src.db import db
-import api.src.models as models
+from app.api.src.db import db
+import app.api.src.models as models
 class Location:
     __table__='locations'
     columns = ['id','borough','latitude','longitude','setting','precinct']

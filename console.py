@@ -1,13 +1,14 @@
-from api.src.models import *
-import api.src.adapters as adapters
-from api.src.db.db import dev_conn
-from api.src.adapters.client import Client
+from app.api.src.models import *
+import app.api.src.adapters as adapters
+from app.api.src.db.db import dev_conn, get_db
+from app.api.src.adapters.client import Client
 
 
-conn= dev_conn
+# conn= dev_conn
+conn = dev_conn
 cursor = conn.cursor()
 
-incident = Incident.find_by_incident_num('604509546',cursor)
+incident = Incident.find_by_incident_num('885776788',cursor)
 # >>> incid.request_incidents(query_params = {'$limit':2,'BORO_NM': 'MANHATTAN', 'OFNS_DESC': 'PETIT LARCENY'})
 incident_jsons = [{'cmplnt_num': '604509546', 'addr_pct_cd': '14', 'boro_nm': 'MANHATTAN', 'cmplnt_fr_dt': '2020-09-26T00:00:00.000', 
 'cmplnt_fr_tm': '19:30:00', 'crm_atpt_cptd_cd': 'COMPLETED', 'juris_desc': 'N.Y. POLICE DEPT', 'ky_cd': '341', 
@@ -31,14 +32,13 @@ incident_jsons = [{'cmplnt_num': '604509546', 'addr_pct_cd': '14', 'boro_nm': 'M
 #   4 | MISCELLANEOUS PENAL LAW      | FELONY        | N.Y. POLICE DEPT
 #   5 | PETIT LARCENY                | MISDEMEANOR   | N.Y. POLICE DEPT
 # (5 rows)
-# nypd_complaints=# SELECT * FROM incidents;  
+# nypd_complaints=# SELECT * FROM incidents LIMIT 4;
 #  id | incident_num | complaint_id | incident_date | incident_time | location_id
 # ----+--------------+--------------+---------------+---------------+-------------
-#   1 |    797931560 |            1 | 2020-09-16    | 00:30:00      |           1
-#   2 |    664557183 |            2 | 2020-06-24    | 21:20:00      |           2
-#   3 |    453437883 |            3 | 2020-09-28    | 20:00:00      |           3
-#   4 |    949043828 |            4 | 2020-07-26    | 01:08:00      |           4
-#   5 |    604509546 |            5 | 2020-09-26    | 19:30:00      |           5
+#  21 |    885776788 |           21 | 2020-12-23    | 19:50:00      |          21
+#  22 |    350637195 |           22 | 2020-12-21    | 01:10:00      |          22
+#  23 |    347843168 |           23 | 2020-11-22    | 22:00:00      |          23
+#  24 |    197941396 |           24 | 2020-11-22    | 09:50:00      |          24
 # (5 rows)
 # nypd_complaints=# SELECT * FROM locations; 
 #  id |  borough  |     latitude      |     longitude      |        setting         | precinct

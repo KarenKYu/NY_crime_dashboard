@@ -1,5 +1,5 @@
-from api.src.db import db
-import api.src.models as models
+from app.api.src.db import db
+import app.api.src.models as models
 
 class Complaint:
     __table__='complaints'

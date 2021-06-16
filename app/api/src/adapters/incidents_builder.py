@@ -1,6 +1,6 @@
-import api.src.models as models
-import api.src.db as db
-import api.src.adapters as adapters
+import app.api.src.models as models
+import app.api.src.db as db
+import app.api.src.adapters as adapters
 import psycopg2
 
 #incident_details == list of dictionaries
@@ -8,7 +8,9 @@ class Builder:
     def run(self, incident_details, conn, cursor): #takes in json details for one incident
         incident = IncidentBuilder().run(incident_details, conn, cursor)
         # print(incident.__dict__)
-        if incident:
+        if incident.exists:
+            return {'incident': incident, 'location': incident.location(cursor), 'complaint': incident.complaint(cursor)}
+        else:
             location = LocationBuilder().run(incident_details, conn, cursor)
             complaint = ComplaintBuilder().run(incident_details, conn, cursor)
             incident.location_id = location.id
@@ -29,15 +31,16 @@ class IncidentBuilder:
 #takes info and assigns to Incident obj instance as attributes
     def run(self, incident_details, conn, cursor):
         selected = self.select_attributes(incident_details)
-        incident = models.Incident(**selected)
-        return incident
-        # if incident:
-        #     incident.exists = True
-        #     return incident         
-        # else:
-        #     incident.exists = False
-        #     # incident = db.save(incident, conn, cursor)
-        #     return incident
+        incident_num = selected['incident_num']
+        incident = models.Incident.find_by_incident_num(incident_num,cursor)
+        if incident:
+            incident.exists = True
+            return incident         
+        else:
+            incident = models.Incident(**selected)
+            incident.exists = False
+            return incident
+    
 
 class LocationBuilder:
     attributes = ['borough','latitude','longitude','setting','precinct']

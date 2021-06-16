@@ -1,6 +1,6 @@
-import api.src.models as models
-import api.src.db as db
-import api.src.adapters as adapters
+import app.api.src.models as models
+import app.api.src.db as db
+import app.api.src.adapters as adapters
 import psycopg2
 
 class RequestAndBuild:
