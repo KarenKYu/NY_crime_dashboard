@@ -9,12 +9,14 @@ API_URL = "http://127.0.0.1:5000/incidents"
 def get_lat_lon(API_URL):
     session = requests.Session()
     incidents = session.get(API_URL).json()
+    inc_id = [incident.get('id','NONE') for incident in incidents]
     latitude  = [incident.get('latitude','NONE') for incident in incidents]
     longitude = [incident.get('longitude','NONE') for incident in incidents]
     borough = [incident.get('borough','NONE') for incident in incidents]
-    scoped_data = zip(latitude,longitude,borough)
-    df = pd.DataFrame(data = scoped_data, columns = ['lat','lon', 'boro'])
-    return df
+    scoped_data = zip(inc_id, latitude,longitude,borough)
+    df = pd.DataFrame(data = scoped_data, columns = ['id','lat','lon', 'boro'])
+    updated_df = df[(df['lat'] != "NONE") & (df['lon'] != "NONE")]
+    return updated_df
 
 lat_lon_df = get_lat_lon(API_URL)
 
@@ -26,14 +28,13 @@ def find_lat_long_by_borough(lat_lon_df, option):
 
 st.header("**NYC** Police Department incidents")
 
-st.map(get_lat_lon(API_URL))
-'''User selects a boroough and display incidents'''
+st.map(lat_lon_df)
+#User selects a boroough and display incidents
 
-option = st.selectbox(
-        'Select a borough:',
-        ('','BRONX','BROOKLYN','MANHATTAN','STATEN ISLAND','QUEENS'))
+boro = st.selectbox('Select a borough:',
+        ('','BRONX','BROOKLYN','MANHATTAN','STATEN ISLAND'bor,'QUEENS'))
 
-st.map(find_lat_long_by_borough(lat_lon_df, option))
+st.map(find_lat_long_by_borough(lat_lon_df, boro))
 
 sites_df= pd.read_csv('tourist_lat_long.csv').drop(columns="Unnamed: 3")
 
